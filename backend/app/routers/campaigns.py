@@ -69,15 +69,21 @@ async def launch_campaign(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
-    """Launch a campaign — generates messages, dispatches to channel stub."""
+    """Launch a campaign — queues background task for generation and dispatch."""
+    campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+        
     try:
-        campaign = await campaign_service.launch_campaign(campaign_id, db)
+        background_tasks.add_task(campaign_service.launch_campaign_bg, campaign_id)
+        # Immediately set status to running so frontend reflects it
+        campaign.status = "running"
+        db.commit()
+        db.refresh(campaign)
         return campaign
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"Campaign launch failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Launch failed: {str(e)}")
+        logger.error(f"Failed to queue campaign launch: {e}")
+        raise HTTPException(status_code=500, detail=f"Launch queue failed: {str(e)}")
 
 
 @router.get("/{campaign_id}/analytics", response_model=CampaignAnalytics)

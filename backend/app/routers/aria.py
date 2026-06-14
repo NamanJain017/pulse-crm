@@ -152,12 +152,12 @@ async def approve_plan(plan_id: str, background_tasks: BackgroundTasks, db: Sess
     db.commit()
     db.refresh(campaign)
 
-    # Launch immediately
+    # Launch in background to prevent request timeout
     try:
-        await campaign_service.launch_campaign(str(campaign.id), db)
+        background_tasks.add_task(campaign_service.launch_campaign_bg, str(campaign.id))
     except Exception as e:
-        logger.error(f"ARIA campaign launch failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Campaign created but launch failed: {str(e)}")
+        logger.error(f"Failed to queue ARIA campaign launch: {e}")
+        raise HTTPException(status_code=500, detail=f"Campaign created but launch queue failed: {str(e)}")
 
     # Remove plan from cache
     del _PLAN_CACHE[plan_id]

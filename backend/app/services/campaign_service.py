@@ -145,6 +145,21 @@ async def launch_campaign(campaign_id: str, db: Session) -> Campaign:
     return campaign
 
 
+async def launch_campaign_bg(campaign_id: str):
+    """
+    Wrapper for launch_campaign to run as a background task with its own db session.
+    """
+    from app.database import SessionLocal
+    db = SessionLocal()
+    try:
+        await launch_campaign(campaign_id, db)
+    except Exception as e:
+        logger.error(f"Background launch failed for {campaign_id}: {e}")
+    finally:
+        db.close()
+
+
+
 def mark_campaign_completed_if_done(campaign_id: str, db: Session):
     """
     Check if all messages have a terminal status and mark campaign completed.
