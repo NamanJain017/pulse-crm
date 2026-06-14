@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pulse
+      POSTGRES_PASSWORD: pulse_dev
+      POSTGRES_DB: pulse_crm
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pulse"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://pulse:pulse_dev@postgres:5432/pulse_crm
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      CHANNEL_STUB_URL: http://channel-stub:8001
+      SECRET_KEY: local-dev-secret
+      TIME_COMPRESSION_FACTOR: 60
+      ALLOWED_ORIGINS: http://localhost:3000
+      ENVIRONMENT: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  channel-stub:
+    build: ./channel-stub
+    ports:
+      - "8001:8001"
+    environment:
+      CRM_RECEIPT_URL: http://backend:8000/api/v1/receipts
+      TIME_COMPRESSION_FACTOR: 60
+    depends_on:
+      - backend
+    volumes:
+      - ./channel-stub:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+
+volumes:
+  postgres_data:

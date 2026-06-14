@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ─── Design Tokens ──────────────────────────────────────────────────────────── */
+:root {
+  --bg-base: #07090e;
+  --bg-surface: #0f1117;
+  --bg-elevated: #161b24;
+  --border-color: #1e2433;
+  --border-glow: rgba(124, 58, 237, 0.25);
+  --violet: #7C3AED;
+  --violet-soft: #A78BFA;
+  --emerald: #10B981;
+  --amber: #F59E0B;
+  --rose: #F43F5E;
+}
+
+* {
+  border-color: var(--border-color);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────────── */
+html,
+body {
+  background-color: var(--bg-base);
+  /* Rich radial gradient — subtle violet bloom at top-left */
+  background-image:
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(124, 58, 237, 0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 85% 5%, rgba(16, 185, 129, 0.04) 0%, transparent 60%);
+  background-attachment: fixed;
+  color: #E6EDF3;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
+
+/* ─── Focus ──────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 2px;
+}
+
+/* ─── Typography ──────────────────────────────────────────────────────────────── */
+.font-mono { font-feature-settings: "tnum"; }
+
+/* ─── Card — glassmorphic base ───────────────────────────────────────────────── */
+.card {
+  background: rgba(15, 17, 23, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Glow variant — used on ARIA plan & insight cards */
+.card-glow {
+  border-color: rgba(124, 58, 237, 0.3) !important;
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.1), 0 4px 32px -8px rgba(124, 58, 237, 0.2);
+}
+
+/* Emerald variant — success / launched */
+.card-emerald {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.08), 0 4px 24px -8px rgba(16, 185, 129, 0.15);
+}
+
+/* ─── Stat card accent lift ───────────────────────────────────────────────────── */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent-color, var(--violet));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 14px 14px 0 0;
+}
+.stat-card:hover::before { opacity: 0.6; }
+
+/* ─── Live pulse dot ──────────────────────────────────────────────────────────── */
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--emerald);
+  animation: pulseDot 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+}
+
+/* ─── Delivery stream row entry ──────────────────────────────────────────────── */
+.stream-entry {
+  animation: streamIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes streamIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Flash-glow on new entry (applied transiently via JS class) */
+.stream-flash {
+  animation: streamFlash 1.2s ease-out forwards;
+}
+
+@keyframes streamFlash {
+  0%   { box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.4); background: rgba(16,185,129,0.08); }
+  100% { box-shadow: none; background: transparent; }
+}
+
+/* ─── Funnel bar glow ─────────────────────────────────────────────────────────── */
+.funnel-bar {
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+.funnel-bar::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 6px;
+  border-radius: 99px;
+  background: inherit;
+  filter: blur(4px);
+  opacity: 0.8;
+}
+
+/* ─── AI/violet shimmer accent ───────────────────────────────────────────────── */
+.ai-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.ai-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(167, 139, 250, 0.06) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 3.5s ease infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* ─── Approve/launch button pulse ring ────────────────────────────────────────── */
+.btn-ai-pulse {
+  position: relative;
+}
+.btn-ai-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: transparent;
+  border: 1px solid var(--violet);
+  opacity: 0;
+  animation: btnPulse 2.4s ease-in-out infinite;
+}
+@keyframes btnPulse {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  50%       { opacity: 0.35; transform: scale(1.04); }
+}
+
+/* ─── Fade-in / slide-up globals ─────────────────────────────────────────────── */
+.animate-fade-in  { animation: fadeIn 0.35s ease-out both; }
+.animate-slide-up { animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
