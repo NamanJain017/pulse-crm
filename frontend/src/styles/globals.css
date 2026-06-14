@@ -6,16 +6,16 @@
 
 /* ─── Design Tokens ──────────────────────────────────────────────────────────── */
 :root {
-  --bg-base: #07090e;
-  --bg-surface: #0f1117;
-  --bg-elevated: #161b24;
-  --border-color: #1e2433;
-  --border-glow: rgba(124, 58, 237, 0.25);
-  --violet: #7C3AED;
-  --violet-soft: #A78BFA;
-  --emerald: #10B981;
-  --amber: #F59E0B;
-  --rose: #F43F5E;
+  --bg-base: #051424;
+  --bg-surface: #122131;
+  --bg-elevated: #1c2b3c;
+  --border-color: #273647;
+  --border-glow: rgba(208, 188, 255, 0.25);
+  --violet: #d0bcff;
+  --violet-soft: #b090ff;
+  --emerald: #4edea3;
+  --amber: #ffb95f;
+  --rose: #ffb4ab;
 }
 
 * {
@@ -26,12 +26,12 @@
 html,
 body {
   background-color: var(--bg-base);
-  /* Rich radial gradient — subtle violet bloom at top-left */
+  /* Rich radial gradient — deep space vibe */
   background-image:
-    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(124, 58, 237, 0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 50% at 85% 5%, rgba(16, 185, 129, 0.04) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(208, 188, 255, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 85% 5%, rgba(78, 222, 163, 0.05) 0%, transparent 60%);
   background-attachment: fixed;
-  color: #E6EDF3;
+  color: #d4e4fa;
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -53,11 +53,12 @@ body {
 
 /* ─── Card — glassmorphic base ───────────────────────────────────────────────── */
 .card {
-  background: rgba(15, 17, 23, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12); /* Top-light */
+  border-radius: 16px;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -67,14 +68,14 @@ body {
 
 /* Glow variant — used on ARIA plan & insight cards */
 .card-glow {
-  border-color: rgba(124, 58, 237, 0.3) !important;
-  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.1), 0 4px 32px -8px rgba(124, 58, 237, 0.2);
+  border-color: rgba(208, 188, 255, 0.3) !important;
+  box-shadow: 0 0 0 1px rgba(208, 188, 255, 0.1), 0 4px 32px -8px rgba(208, 188, 255, 0.2);
 }
 
 /* Emerald variant — success / launched */
 .card-emerald {
-  border-color: rgba(16, 185, 129, 0.3) !important;
-  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.08), 0 4px 24px -8px rgba(16, 185, 129, 0.15);
+  border-color: rgba(78, 222, 163, 0.3) !important;
+  box-shadow: 0 0 0 1px rgba(78, 222, 163, 0.08), 0 4px 24px -8px rgba(78, 222, 163, 0.15);
 }
 
 /* ─── Stat card accent lift ───────────────────────────────────────────────────── */
@@ -90,7 +91,7 @@ body {
   background: var(--accent-color, var(--violet));
   opacity: 0;
   transition: opacity 0.3s ease;
-  border-radius: 14px 14px 0 0;
+  border-radius: 16px 16px 0 0;
 }
 .stat-card:hover::before { opacity: 0.6; }
 
@@ -106,8 +107,8 @@ body {
 }
 
 @keyframes pulseDot {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
-  50% { opacity: 0.7; box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(78, 222, 163, 0.5); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 5px rgba(78, 222, 163, 0); }
 }
 
 /* ─── Delivery stream row entry ──────────────────────────────────────────────── */
@@ -204,4 +205,18 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ─── Custom Utilities ───────────────────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(135deg, #4edea3 0%, #3B82F6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.text-gradient-violet {
+  background: linear-gradient(135deg, #d0bcff 0%, #ffb4ab 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

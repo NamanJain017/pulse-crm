@@ -8,28 +8,31 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        base: "#0D1117",
-        surface: "#161B22",
-        elevated: "#1C2333",
-        border: "#30363D",
-        "text-primary": "#E6EDF3",
-        "text-secondary": "#8B949E",
-        "text-muted": "#484F58",
+        base: "#051424",
+        surface: "#122131",
+        elevated: "#1c2b3c",
+        border: "#273647",
+        "text-primary": "#d4e4fa",
+        "text-secondary": "#bbcabf",
+        "text-muted": "#86948a",
         violet: {
-          DEFAULT: "#7C3AED",
-          soft: "#A78BFA",
+          DEFAULT: "#d0bcff",
+          soft: "#b090ff",
         },
-        emerald: "#10B981",
-        amber: "#F59E0B",
-        rose: "#F43F5E",
-        sky: "#3B82F6",
+        emerald: {
+          DEFAULT: "#4edea3",
+          dim: "#10b981",
+        },
+        amber: "#ffb95f",
+        rose: "#ffb4ab",
+        sky: "#d4e4fa",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       borderRadius: {
-        card: "12px",
+        card: "16px",
       },
       animation: {
         "fade-in": "fadeIn 0.3s ease-out",
