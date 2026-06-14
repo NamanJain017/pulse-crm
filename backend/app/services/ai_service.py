@@ -230,7 +230,15 @@ Brief: "{brief}"
 
 {AVAILABLE_FIELDS}
 
-Return ONLY valid JSON with this exact structure (no prose, no markdown):
+CRITICAL RULES:
+1. Use at MOST 2 filter conditions (plus the mandatory opted_out=false).
+2. ONLY use fields explicitly mentioned or strongly implied in the brief. Do NOT infer extra filters.
+3. If the brief mentions "Platinum customers in Mumbai", use ONLY tier=platinum AND city=Mumbai (2 conditions max). Do NOT add preferred_cat or any other field.
+4. If the brief mentions a spend threshold, use a conservative value (e.g. ₹3000 brief → use 2500 to get more customers).
+5. If the brief mentions "60 days inactive", use days_since_last_order >= 60.
+6. Prefer broader segments (more customers) over narrow ones.
+
+Return ONLY valid JSON with this exact structure (no prose, no markdown, no emojis):
 {{
   "segment_name": "Short descriptive name (max 50 chars)",
   "rules": {{
@@ -244,8 +252,6 @@ Return ONLY valid JSON with this exact structure (no prose, no markdown):
   "suggested_channel": "whatsapp",
   "suggested_timing": "Best day and time to send (e.g. Tuesday 10:00 AM)"
 }}
-
-Always include opted_out = false. Use conservative thresholds.
 """
     raw = _call_ai(prompt)
     data = _extract_json(raw)
@@ -302,46 +308,53 @@ def generate_messages_batch(
             for c in batch
         ]
 
-        prompt = f"""
-Generate personalized {channel.upper()} messages for KORA fashion brand customers.
+        # Strict JSON-only prompt — critical for models that tend to reason in prose
+        prompt = f"""OUTPUT ONLY VALID JSON. NO EXPLANATIONS. NO PROSE. NO THINKING. JUST JSON.
 
+Task: Generate personalized WhatsApp messages for KORA fashion brand.
 Campaign goal: {campaign_goal}
-Character limit: {char_limit} characters maximum per message
-Channel: {channel}
+Max {char_limit} characters per message. Plain text only, no emojis.
 
-Customer data:
+Customers:
 {json.dumps(trimmed, indent=2)}
 
-Rules:
-- Use the customer's first name naturally
-- Reference their last purchase category or city when it feels natural
-- Warm, personal tone — never sound like a bulk blast
-- Include a clear call-to-action
-- Stay under {char_limit} characters
-- For WhatsApp/RCS you can use 1-2 emojis max
-- NEVER be generic ("Dear valued customer" is forbidden)
-
-Return ONLY a JSON array (no prose, no markdown):
+Output format — a JSON array with exactly {len(batch)} objects, one per customer:
 [
-  {{"customer_id": "uuid", "message": "personalized message here"}},
+  {{"customer_id": "EXACT_ID_FROM_DATA", "message": "Hi [first_name]! [personal ref to category/city]. [CTA mentioning KORA]. Shop at kora.in"}},
   ...
 ]
+
+Example for a customer named Priya in Mumbai who likes Ethnic Wear:
+{{"customer_id": "abc123", "message": "Hi Priya! Your favorite Ethnic Wear collection just got a festive upgrade at KORA. Shop the new arrivals at kora.in"}}
+
+START YOUR RESPONSE WITH [ AND END WITH ]
 """
         try:
             raw = _call_ai(prompt)
             batch_results = _extract_json(raw)
-            if isinstance(batch_results, list):
-                all_results.extend(batch_results)
-            else:
-                logger.warning(f"Unexpected AI response shape for batch {i}")
+            if isinstance(batch_results, list) and len(batch_results) > 0:
+                # Validate results have required fields
+                valid = [r for r in batch_results if "customer_id" in r and "message" in r]
+                if valid:
+                    all_results.extend(valid)
+                    continue
+            logger.warning(f"AI returned empty/invalid results for batch {i}, using personalized fallback")
         except Exception as e:
-            logger.error(f"Message generation failed for batch {i}: {e}")
-            # Fallback: generate simple template messages
-            for c in batch:
-                all_results.append({
-                    "customer_id": str(c["id"]),
-                    "message": f"Hi {c['name'].split()[0]}! Check out KORA's latest collection → kora.in/shop"
-                })
+            logger.error(f"Message generation failed for batch {i}: {str(e)[:200]}")
+
+        # Personalized fallback using customer data (not a generic blast)
+        for c in batch:
+            cat = c.get("last_category", "fashion")
+            city = c.get("city", "")
+            name = c["first_name"]
+            tier = c.get("tier", "silver")
+            city_ref = f" in {city}" if city else ""
+            tier_gift = "an exclusive offer" if tier in ("gold", "platinum") else "a special discount"
+            all_results.append({
+                "customer_id": str(c["id"]),
+                "message": f"Hi {name}! We have {tier_gift} waiting for you{city_ref}. Our latest {cat} collection is live at KORA - shop now at kora.in/shop"
+            })
+
 
     return all_results
 
@@ -364,6 +377,9 @@ def orchestrate_aria_brief(
     segment_data = parse_segment_brief(brief)
 
     # Step 2: Generate sample messages (first 3 customers)
+    # Small delay to avoid back-to-back rate limits on the same model
+    import time
+    time.sleep(2)
     sample_messages = []
     if sample_customers:
         try:

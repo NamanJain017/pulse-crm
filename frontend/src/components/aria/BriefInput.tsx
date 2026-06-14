@@ -57,6 +57,7 @@ export function BriefInput({
 
       {/* Textarea */}
       <textarea
+        id="aria-brief-input"
         value={brief}
         onChange={(e) => setBrief(e.target.value)}
         onFocus={() => setFocused(true)}
@@ -80,6 +81,7 @@ export function BriefInput({
           {EXAMPLE_BRIEFS.map((example, i) => (
             <button
               key={i}
+              id={`aria-example-${i}`}
               onClick={() => setBrief(example)}
               disabled={isLoading}
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all duration-200"
@@ -105,7 +107,7 @@ export function BriefInput({
           ))}
         </div>
 
-        <Button variant="ai" onClick={handleSubmit} disabled={isLoading || brief.trim().length < 10}
+        <Button id="aria-build-btn" variant="ai" onClick={handleSubmit} disabled={isLoading || brief.trim().length < 10}
           className="btn-ai-pulse flex-shrink-0 ml-3">
           {isLoading ? (
             <>

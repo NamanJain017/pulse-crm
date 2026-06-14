@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/campaigns", label: "Campaigns", icon: Megaphone },
-  { href: "/aria", label: "AI Insights", icon: Sparkles },
+  { href: "/aria", label: "ARIA Agent", icon: Sparkles },
   { href: "/customers", label: "Customers", icon: Users },
   { href: "/segments", label: "Segments", icon: Filter },
   { href: "/settings", label: "Settings", icon: Settings },
@@ -41,12 +41,20 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* New Campaign Button — links to Campaigns page */}
-      <div className="px-6 pb-6">
-        <Link href="/campaigns">
+      {/* New Campaign Button — links to ARIA (primary flow) */}
+      <div className="px-6 pb-6 space-y-2">
+        <Link href="/aria">
           <Button className="w-full justify-center gap-2 bg-[#4edea3] hover:bg-[#3dcca1] text-[#003824] border-none font-semibold shadow-[0_0_20px_rgba(78,222,163,0.25)] rounded-lg py-5">
-            <Megaphone size={16} /> New Campaign
+            <Sparkles size={16} /> Brief ARIA
           </Button>
+        </Link>
+        <Link href="/campaigns/new">
+          <button className="w-full text-xs text-center py-1.5 rounded-md transition-colors duration-150"
+            style={{ color: "rgba(255,255,255,0.3)" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.6)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.3)"; }}>
+            or create manually →
+          </button>
         </Link>
       </div>
 
