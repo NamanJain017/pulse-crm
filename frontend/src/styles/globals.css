@@ -162,6 +162,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background: linear-gradient(105deg, transparent 30%, rgba(167, 139, 250, 0.06) 50%, transparent 70%);
   background-size: 200% 100%;
   animation: shimmer 3.5s ease infinite;
