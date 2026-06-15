@@ -75,10 +75,11 @@ async def launch_campaign(campaign_id: str, db: Session) -> Campaign:
             for c in customers
         ]
         try:
-            ai_messages = generate_messages_batch(
-                customers=customer_dicts,
-                campaign_goal=goal,
-                channel=campaign.channel,
+            ai_messages = await asyncio.to_thread(
+                generate_messages_batch,
+                customer_dicts,
+                goal,
+                campaign.channel
             )
             # Build lookup: customer_id → message content
             msg_lookup = {m["customer_id"]: m["message"] for m in ai_messages}
