@@ -70,8 +70,18 @@ export function DeliveryStream({ campaignId, isRunning }: { campaignId: string; 
         </div>
       ) : events.length === 0 ? (
         <div className="py-10 text-center text-sm flex flex-col items-center gap-2" style={{ color: "rgba(255,255,255,0.25)" }}>
-          <MessageCircle size={20} className="animate-pulse" style={{ color: "rgba(16,185,129,0.4)" }} />
-          Waiting for delivery events...
+          <div className="flex items-center gap-3 text-violet-400 font-medium mb-2">
+            <span className="w-4 h-4 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+            Generating AI Messages...
+          </div>
+          <p className="text-sm text-center mb-2">
+            ARIA is personalizing messages for the audience.<br />
+            This may take a few minutes for large segments.
+          </p>
+          <div className="flex items-center gap-2 mt-2 opacity-50">
+            <MessageCircle size={16} />
+            Waiting for delivery events...
+          </div>
         </div>
       ) : (
         <div ref={containerRef} className="space-y-1.5 max-h-80 overflow-y-auto pr-1">

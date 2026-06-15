@@ -54,6 +54,17 @@ export function useLaunchCampaign() {
   });
 }
 
+export function useDeleteCampaign() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => campaignsApi.delete(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["campaigns"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+}
+
 export function useCreateCampaign() {
   const qc = useQueryClient();
   return useMutation({

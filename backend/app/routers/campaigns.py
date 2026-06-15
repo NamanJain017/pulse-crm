@@ -86,6 +86,22 @@ async def launch_campaign(
         raise HTTPException(status_code=500, detail=f"Launch queue failed: {str(e)}")
 
 
+@router.delete("/{campaign_id}")
+def delete_campaign(campaign_id: str, db: Session = Depends(get_db)):
+    """Delete a campaign and cascade delete its messages and events."""
+    campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    try:
+        db.delete(campaign)
+        db.commit()
+        return {"status": "deleted", "campaign_id": campaign_id}
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to delete campaign {campaign_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Delete failed: {str(e)}")
+
+
 @router.get("/{campaign_id}/analytics", response_model=CampaignAnalytics)
 def get_campaign_analytics(campaign_id: str, db: Session = Depends(get_db)):
     campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()

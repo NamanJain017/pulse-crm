@@ -110,6 +110,8 @@ export const campaignsApi = {
 
   launch: (id: string) => request<Campaign>(`/campaigns/${id}/launch`, { method: "POST" }),
 
+  delete: (id: string) => request<{ status: string }>(`/campaigns/${id}`, { method: "DELETE" }),
+
   analytics: (id: string) => request<CampaignAnalytics>(`/campaigns/${id}/analytics`),
 
   messages: (id: string, page = 1, pageSize = 50) =>
